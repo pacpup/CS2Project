@@ -25,20 +25,19 @@ using std::ostream;
 //This is my class
 class User
 {
+User *head = nullptr;
 private:
-    struct Node
-    {
     int id;
     string nameOfStudent;
-    struct Node  *next;
-    };
-Node* head = nullptr;
+    int timeUsed;
+
 public:
     int getid();
     string getName();
     void setid(int);
     void setName(string);
-    int timeUsed;
+    int getTime();
+    void setTime(int);
     User();
     User(int, string, int);
     int getID();
@@ -55,15 +54,16 @@ void logoff(User*[]);
 void searchForUser(User*[]);
 void displayLab(User*[]);
 bool checkminutes(int);
+void restoreUser(fstream&, User*[]);
+void updateLog(fstream & );
 
 //Default constructor
 User::User(){id = -1; nameOfStudent=""; timeUsed = 0; }
 //Default that accepts values for each variable.
 User::User(int newID, string nameOfStudentNew, int timeUsedNew)
 {
-
-    Node.id = newID;
-    Node.nameOfStudent  = nameOfStudentNew;
+    id = newID;
+    nameOfStudent  = nameOfStudentNew;
     timeUsed = timeUsedNew;
 }
 int User::getid()
@@ -81,6 +81,14 @@ void User::setid(int newID)
 void User::setName(string newStudent)
 {
     nameOfStudent = newStudent;
+}
+int User::getTime()
+{
+    return timeUsed;
+}
+void User::setTime(int newTime)
+{
+    timeUsed = newTime;
 }
 //Global Constants
 // Number of Comp labs
@@ -103,12 +111,13 @@ int main()
     //seed time for our random user id.
     srand(time(0));
     //creates the array of pointers.
-    User * ptr[NUMLABS] = {0};
-    //creates a new array on the heap for our Users.
-    for(int i=0; i<NUMLABS; ++i)
-    {
-        ptr[i]  = new User[LABSIZES[i]];
-    }
+    User * LabList[NUMLABS] = {0};
+
+
+
+
+
+
     //calls the list of universities.
     displayuniversities();
     int choice = 0;
@@ -118,19 +127,21 @@ int main()
     switch(choice)
     {
     case(1):
-        login(ptr);
+        login(LabList);
+        updateLog(logFile);
         break;
     case(2):
-        logoff(ptr);
+        logoff(LabList);
+        updateLog(logFile);
         break;
     case(3):
-        searchForUser(ptr);
+        searchForUser(LabList);
         break;
     case(4):
-        displayLab(ptr);
+        displayLab(LabList);
         break;
     case(5):
-
+        restoreUser(logFile,LabList);
         break;
     case(6):
         cout<< "Thank you for trying the program";
@@ -248,7 +259,7 @@ void login(User*ptr[])
 
     ptr[(labNum-1)][(stationNum-1)].setid(ID);
     ptr[labNum-1][stationNum-1].setName(NewName);
-    ptr[labNum-1][stationNum-1].timeUsed = workTime;
+    ptr[labNum-1][stationNum-1].setTime(workTime);
     cout<< "Log in successful." <<endl;
     system("pause");
 }
@@ -272,7 +283,7 @@ void logoff(User* ptr[])
 
     ptr[(labNum-1)][(stationNum-1)].setid(-1);
     ptr[labNum-1][stationNum-1].setName("");
-    ptr[labNum-1][stationNum-1].timeUsed = 0;
+    ptr[labNum-1][stationNum-1].setTime(0);
     cout<< "Log out successful." <<endl;
     system("pause");
 }
@@ -339,3 +350,25 @@ bool checkminutes(int Time)
  }
  return false;
 }
+void restoreUser(fstream& LogFile, User*LabNumptr[])
+{
+
+}
+ void updateLog(fstream &tLog )
+{
+
+  // current date/time based on current system
+  time_t now = time(0);
+  // convert now to c-string form
+  char* timeOf = ctime(&now);
+  // we want a way to limit the size to be just 20 in length
+  timeOf[20] = '\0'; // this effectively truncates the c-string
+
+  tLog << timeOf << " " <<endl;
+
+  if (cin.fail())
+  {
+    std::cerr << "write file error!!!" << endl;
+  }
+}
+
